@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package fundtransfer;
+
+service FundTransferService {
+    // RPC for processing fund transfers
+    rpc ProcessFundTransfer (TransferRequest) returns (TransferResponse);
+}
+
+// Request message for fund transfer
+message TransferRequest {
+    string transaction_id = 1;
+    string source_account = 2;
+    string destination_account = 3;
+    double amount = 4;
+    string currency = 5; // e.g., "USD", "IDR"
+    string transfer_type = 6; // e.g., "debit", "credit"
+}
+
+// Response message for fund transfer
+message TransferResponse {
+    string transaction_id = 1;
+    string status = 2; // e.g., "SUCCESS", "FAILED"
+    string message = 3; // Additional details about the transfer
+}
