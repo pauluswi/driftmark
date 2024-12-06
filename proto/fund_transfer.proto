@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package fundtransfer;
 
+// Add the go_package option with the appropriate path
+option go_package = "github.com/pauluswi/driftmark/proto;fundtransfer";
+
 service FundTransferService {
     // RPC for processing fund transfers
     rpc ProcessFundTransfer (TransferRequest) returns (TransferResponse);
