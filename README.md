@@ -48,3 +48,18 @@ A **gRPC-based Fund Transfer Service** implemented in Go for real-time transacti
   go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
   go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
   ```
+  
+### Installation
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-username/golang-grpc-portfolio.git
+   cd golang-grpc-portfolio
+   ```
+2. **Generate the gRPC code**:
+   ```bash
+   protoc --go_out=. --go-grpc_out=. proto/fund_transfer.proto
+   ```
+3. **Run the Client**:
+   ```bash
+   go run client/main.go
+   ```
