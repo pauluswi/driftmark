@@ -59,7 +59,17 @@ A **gRPC-based Fund Transfer Service** implemented in Go for real-time transacti
    ```bash
    protoc --go_out=. --go-grpc_out=. proto/fund_transfer.proto
    ```
-3. **Run the Client**:
+3. **Install dependencies**:
+   ```bash
+   go mod tidy
+   ```
+
+### Running the Application
+1. **Start the Server**:
+   ```bash
+   go run server/main.go
+   ```
+2. **Run the Client**:
    ```bash
    go run client/main.go
    ```
