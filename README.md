@@ -73,3 +73,21 @@ A **gRPC-based Fund Transfer Service** implemented in Go for real-time transacti
    ```bash
    go run client/main.go
    ```
+
+## API Definition
+The Fund Transfer Service is defined in proto/fund_transfer.proto:
+
+### **Service**: FundTransferService
+#### **RPC Method**: ProcessFundTransfer
+
+- **Request**:
+  - ***transaction_id***: Unique ID for the transaction.
+  - ***source_account***: Source account number.
+  - ***destination_account***: Destination account number.
+  - ***amount***: Amount to transfer.
+  - ***currency***: Currency of the transaction (e.g., USD).
+  - ***transfer_type***: Type of transfer (debit or credit).
+- **Response**:
+  - ***transaction_id***: Same as the request ID.
+  - ***status***: SUCCESS or FAILED.
+  - ***message***: Additional details about the transfer.
