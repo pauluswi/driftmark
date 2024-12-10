@@ -33,3 +33,18 @@ A **gRPC-based Fund Transfer Service** implemented in Go for real-time transacti
 ├── README.md                  # Documentation for the project
 └── LICENSE                    # License for the project
 ```
+
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- [Go](https://golang.org/dl/) (1.21 or later)
+- [Protocol Buffers Compiler](https://grpc.io/docs/protoc-installation/)
+- Install `protoc-gen-go` and `protoc-gen-go-grpc`:
+  ```bash
+  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+  ```
