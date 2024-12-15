@@ -89,3 +89,26 @@ The Fund Transfer Service is defined in proto/fund_transfer.proto:
   - ***transaction_id***: Same as the request ID.
   - ***status***: SUCCESS or FAILED.
   - ***message***: Additional details about the transfer.
+
+#### **Sample Request/Response**:
+
+- **Request**:
+   ```json
+      {
+         "transaction_id": "TXN12345",
+         "source_account": "1234567890",
+         "destination_account": "9876543210",
+         "amount": 100.0,
+         "currency": "USD",
+         "transfer_type": "debit"
+      }
+   ```
+
+- **Response**:
+   ```json
+      {
+         "transaction_id": "TXN12345",
+         "status": "SUCCESS",
+         "message": "Fund transfer processed successfully"
+      }
+   ```
