@@ -1,0 +1,3 @@
+{"level":"info","msg":"Processing fund transfer","transaction_id":"TXN12345","source_account":"1234567890","destination_account":"9876543210","amount":100,"currency":"USD","transfer_type":"debit"}
+{"level":"info","msg":"Fund transfer successful","transaction_id":"TXN12345","source_account":"1234567890","destination_account":"9876543210","amount":100}
+{"level":"info","msg":"Received response","transaction_id":"TXN12345","status":"SUCCESS","message":"Fund transfer processed successfully"}
