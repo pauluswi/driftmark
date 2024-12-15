@@ -5,7 +5,8 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/pauluswi/drfitmark/proto"
+	pb "github.com/pauluswi/driftmark/proto"
+
 	"google.golang.org/grpc"
 )
 
