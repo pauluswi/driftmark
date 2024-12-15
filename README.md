@@ -9,7 +9,6 @@ A **gRPC-based Fund Transfer Service** implemented in Go for real-time transacti
 - **Real-Time Fund Transfer**: Process fund transfers between accounts with transaction details.
 - **Structured Logging**: Logs using [Zap](https://github.com/uber-go/zap) for better observability.
 - **Error Handling**: Implements gRPC error codes for precise error reporting.
-- **Unit Testing**: Includes unit tests for success and failure scenarios.
 - **Proto Definitions**: Based on `Protocol Buffers` for defining the service and messages.
 
 ---
@@ -112,3 +111,19 @@ The Fund Transfer Service is defined in proto/fund_transfer.proto:
          "message": "Fund transfer processed successfully"
       }
    ```
+
+## Logging
+Structured logs are implemented using Zap and stored in the logs/log.json file. Logs include transaction details, statuses, and errors.
+
+Example logs/log.json:
+```json
+{"level":"info","msg":"Processing fund transfer","transaction_id":"TXN12345","source_account":"1234567890","destination_account":"9876543210","amount":100,"currency":"USD","transfer_type":"debit"}
+{"level":"info","msg":"Fund transfer successful","transaction_id":"TXN12345","source_account":"1234567890","destination_account":"9876543210","amount":100}
+{"level":"info","msg":"Received response","transaction_id":"TXN12345","status":"SUCCESS","message":"Fund transfer processed successfully"}
+      
+```
+
+## License
+This project is licensed under the Apache License. 
+
+
