@@ -1,5 +1,7 @@
 # driftmark - Fund Transfer Service (gRPC)
 
+[![Build Server](https://github.com/pauluswi/driftmark/actions/workflows/go.yml/badge.svg)](https://github.com/pauluswi/driftmark/actions/workflows/go.yml)
+
 A **gRPC-based Fund Transfer Service** implemented in Go for real-time transaction processing between accounts. This project demonstrates structured logging with **Zap**, robust error handling with gRPC status codes, and unit tests for ensuring reliability.
 
 ---
