@@ -2,71 +2,74 @@ package main
 
 import (
 	"context"
-	"log"
 	"math/rand"
 	"net"
 	"sync"
 	"time"
 
 	pb "github.com/pauluswi/driftmark/proto"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-// FundTransferServiceServer implements the gRPC service
 type FundTransferServiceServer struct {
 	pb.UnimplementedFundTransferServiceServer
-	accounts map[string]float64 // Mock account balances
-	mutex    sync.Mutex         // To handle concurrent updates
+	accounts map[string]float64
+	mutex    sync.Mutex
+	logger   *zap.Logger
 }
 
-// NewFundTransferServiceServer initializes the server with mock data
 func NewFundTransferServiceServer() *FundTransferServiceServer {
+	// Configure zap logger to write to logs/log.json
+	config := zap.NewProductionConfig()
+	config.OutputPaths = []string{"stdout", "./logs/log.json"}
+
+	logger, _ := config.Build()
 	return &FundTransferServiceServer{
 		accounts: map[string]float64{
-			"1234567890": 1000.0, // Source account
-			"9876543210": 500.0,  // Destination account
+			"1234567890": 1000.0,
+			"9876543210": 500.0,
 		},
+		logger: logger,
 	}
 }
 
-// ProcessFundTransfer handles fund transfers
 func (s *FundTransferServiceServer) ProcessFundTransfer(ctx context.Context, req *pb.TransferRequest) (*pb.TransferResponse, error) {
-	log.Printf("Processing transfer: TransactionID=%s, Source=%s, Destination=%s, Amount=%.2f %s",
-		req.TransactionId, req.SourceAccount, req.DestinationAccount, req.Amount, req.Currency)
+	s.logger.Info("Processing fund transfer",
+		zap.String("transaction_id", req.TransactionId),
+		zap.String("source_account", req.SourceAccount),
+		zap.String("destination_account", req.DestinationAccount),
+		zap.Float64("amount", req.Amount),
+		zap.String("currency", req.Currency),
+		zap.String("transfer_type", req.TransferType),
+	)
 
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	// Validate source and destination accounts
+	// Validate accounts
 	sourceBalance, srcExists := s.accounts[req.SourceAccount]
 	_, destExists := s.accounts[req.DestinationAccount]
 
 	if !srcExists {
-		return &pb.TransferResponse{
-			TransactionId: req.TransactionId,
-			Status:        "FAILED",
-			Message:       "Source account not found",
-		}, nil
+		s.logger.Error("Source account not found", zap.String("account", req.SourceAccount))
+		return nil, status.Errorf(codes.NotFound, "Source account %s not found", req.SourceAccount)
 	}
 
 	if !destExists {
-		return &pb.TransferResponse{
-			TransactionId: req.TransactionId,
-			Status:        "FAILED",
-			Message:       "Destination account not found",
-		}, nil
+		s.logger.Error("Destination account not found", zap.String("account", req.DestinationAccount))
+		return nil, status.Errorf(codes.NotFound, "Destination account %s not found", req.DestinationAccount)
 	}
 
-	// Check sufficient funds for debit transactions
+	// Check sufficient funds
 	if req.TransferType == "debit" && sourceBalance < req.Amount {
-		return &pb.TransferResponse{
-			TransactionId: req.TransactionId,
-			Status:        "FAILED",
-			Message:       "Insufficient funds in source account",
-		}, nil
+		s.logger.Error("Insufficient funds", zap.String("account", req.SourceAccount), zap.Float64("balance", sourceBalance))
+		return nil, status.Errorf(codes.FailedPrecondition, "Insufficient funds in account %s", req.SourceAccount)
 	}
 
-	// Process the fund transfer
+	// Process fund transfer
 	if req.TransferType == "debit" {
 		s.accounts[req.SourceAccount] -= req.Amount
 		s.accounts[req.DestinationAccount] += req.Amount
@@ -75,7 +78,13 @@ func (s *FundTransferServiceServer) ProcessFundTransfer(ctx context.Context, req
 		s.accounts[req.DestinationAccount] -= req.Amount
 	}
 
-	log.Printf("Transfer successful: TransactionID=%s", req.TransactionId)
+	s.logger.Info("Fund transfer successful",
+		zap.String("transaction_id", req.TransactionId),
+		zap.String("source_account", req.SourceAccount),
+		zap.String("destination_account", req.DestinationAccount),
+		zap.Float64("amount", req.Amount),
+	)
+
 	return &pb.TransferResponse{
 		TransactionId: req.TransactionId,
 		Status:        "SUCCESS",
@@ -88,14 +97,16 @@ func main() {
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		panic("Failed to listen: " + err.Error())
 	}
 
+	server := NewFundTransferServiceServer()
 	grpcServer := grpc.NewServer()
-	pb.RegisterFundTransferServiceServer(grpcServer, NewFundTransferServiceServer())
 
-	log.Println("Fund Transfer Service Server running on port 50051...")
+	pb.RegisterFundTransferServiceServer(grpcServer, server)
+	server.logger.Info("Fund Transfer Service Server running on port 50051...")
+
 	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
+		server.logger.Fatal("Failed to serve gRPC server", zap.Error(err))
 	}
 }
